@@ -30,13 +30,32 @@ class BoogleBoard {
     let board = "";
     for (let i = 0 ; i < this._dimension ; i++) {
       for (let j = 0 ; j < this._dimension ; j++) {
-        board += this._board[i+j] + " ";
+        board += this._board[(i*this._dimension)+j] + " ";
       }
       board += "\n";
     }
 
     console.log(board);
   }
+
+  printBoard2D() {
+    let board = "[";
+    for (let i = 0 ; i < this._dimension ; i++) {
+      board += "["
+      for (let j = 0 ; j < this._dimension ; j++) {
+        board += "'" +this._board[(i*this._dimension)+j] + "'";
+        if( j != this._dimension-1)
+          board += ",";
+      }
+      board += "]";
+      if (i != this._dimension-1)
+        board += "\n";
+    }
+    board += "]";
+
+    console.log(board);
+  }
+
 
   solve() {
     //?
@@ -211,6 +230,7 @@ class BoogleBoard {
 let boogle = new BoogleBoard();
 
 boogle.shake(4);
-boogle.printBoard();
+// boogle.printBoard();
+boogle.printBoard2D();
 
 console.log(boogle.solve());
