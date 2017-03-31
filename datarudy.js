@@ -1,4 +1,4 @@
 // var words = ["APPLE", "BERRY", "ORANGE", "RUN", "TV", "MOVIES", "SUPER", "NUMBER", "PRAY", "ASS", "SUM", "SUN"];
-var words = ["RUN", "BERY", "ARP", "KSSA"];
+var words = ["RUN", "BERY", "ARP", "KSSA", "NUR", "RNS", "SUPE", "SUN", "SNNN", "SNURMP", "RUA", "SNA", "PUNK", "SUNAR"];
 
 exports.words = words;

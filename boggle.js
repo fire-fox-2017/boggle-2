@@ -70,27 +70,79 @@ class BoogleBoard {
         let history = [];
         let move = 0;
         for (let fi = 0 ; fi < found_index.length ; fi++) {
+          console.log(`start from index: ${found_index[fi]}`);
+
           cur = found_index[fi];
           let isFound = false;
           while (!isFound) {
-            // check right
             // move cursor
             // check if cursor is valid position
             // check if cursor value is the same as word
-            if ( (cur+1)%this._dimension > 0  && this._board[cur+1] == temp[wi] ) {
-              console.log(`this._board[${cur+1}] = ${this._board[cur+1]}`);
+            // check right
+            if ( (cur+1)%this._dimension > 0  && this._board[cur+1] == temp[wi] && history.indexOf(cur+1) == -1 ) {
+              // console.log(`this._board[${cur+1}] = ${this._board[cur+1]}`);
               history.push(cur);
               cur = cur+1;
               wi++;
-              console.log(`wi = ${wi}, temp.length = ${temp.length}`)
+              // console.log(`wi = ${wi}, temp.length = ${temp.length}`)
               if (wi == temp.length)
                 isFound = true;
 
-              console.log(`isFound = ${isFound}`);
-            } // check left
-            else if ( (cur%this._dimension)-1 >= 0 && this._board[cur-1] == temp[wi]) {
+              // console.log(`isFound = ${isFound}`);
+            }
+            // check left
+            else if ( (cur%this._dimension)-1 >= 0 && this._board[cur-1] == temp[wi] && history.indexOf(cur-1) == -1) {
               history.push(cur);
               cur = cur-1;
+              wi++;
+              if (wi == temp.length)
+                isFound = true;
+            }
+            // check up
+            else if ( (cur - this._dimension) >= 0 && this._board[cur - this._dimension] == temp [wi] && history.indexOf(cur - this._dimension) == -1) {
+              history.push(cur);
+              cur = cur - this._dimension;
+              wi++;
+              if (wi == temp.length)
+                isFound = true;
+            }
+            // check down
+            else if ( (cur + this._dimension) < Math.pow(this._dimension, 2) && this._board[cur + this._dimension] == temp [wi] && history.indexOf(cur + this._dimension) == -1) {
+              history.push(cur);
+              cur = cur + this._dimension;
+              wi++;
+              if (wi == temp.length)
+                isFound = true;
+            }
+            // check diagonal directions
+            // check up left
+            else if ( (cur%this._dimension)-1 >= 0 && (cur - this._dimension) >= 0 && this._board[cur-this._dimension-1] == temp[wi] && history.indexOf(cur-this._dimension-1) == -1 ) {
+              history.push(cur);
+              cur = cur-this._dimension-1;
+              wi++;
+              if (wi == temp.length)
+                isFound = true;
+            }
+            // check down right
+            else if ( (cur+1)%this._dimension > 0 && (cur + this._dimension) < Math.pow(this._dimension, 2) && this._board[cur+this._dimension+1] == temp[wi] && history.indexOf(cur+this._dimension+1) == -1 ) {
+              history.push(cur);
+              cur = cur+this._dimension+1;
+              wi++;
+              if (wi == temp.length)
+                isFound = true;
+            }
+            // check up right
+            else if ( (cur+1)%this._dimension > 0 && (cur - this._dimension) >= 0 && this._board[cur-this._dimension+1] == temp[wi] && history.indexOf(cur-this._dimension+1) == -1 ) {
+              history.push(cur);
+              cur = cur-this._dimension+1;
+              wi++;
+              if (wi == temp.length)
+                isFound = true;
+            }
+            // check down left
+            else if ( (cur%this._dimension)-1 >= 0  && (cur + this._dimension) < Math.pow(this._dimension, 2) && this._board[cur+this._dimension-1] == temp[wi] && history.indexOf(cur+this._dimension-1) == -1 ) {
+              history.push(cur);
+              cur = cur+this._dimension-1;
               wi++;
               if (wi == temp.length)
                 isFound = true;
