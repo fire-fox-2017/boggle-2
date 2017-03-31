@@ -13,6 +13,8 @@ class BoggleBoard {
 
     this.tracedString = "";
     this.tracedMove = [];
+
+    this.matchingWords = [];
   }
 
   shake() {
@@ -27,14 +29,14 @@ class BoggleBoard {
     return this.board;
   }
 
-  import_words(filename) {
+  importWords(filename) {
     let data = fs.readFileSync(filename).toString();
     let arrayPattern = /[A-Z]+/g;
     let words = data.match(arrayPattern);
     this.words = words;
   }
 
-  possible_moves(row, col) {
+  possibleMoves(row, col) {
     let posMov = [];
     let posMovCol = [];
     let posMovRow = [];
@@ -60,6 +62,8 @@ class BoggleBoard {
         posMov.push([posMovCol[i],posMovRow[j]]);
         if (posMovCol[i] === col && posMovRow[j] === row) {
           posMov.shift();
+        } else if (this.isInPrevMoves(this.tracedMove, [posMovRow[i],posMovCol[j]])) {
+          posMov.shift();
         }
       }
     }
@@ -67,21 +71,22 @@ class BoggleBoard {
     return posMov;
   }
 
-  trace_move(row, col) {
+  traceMove(row, col) {
     this.tracedMove.push([row,col]);
-    return this.board[row][col];
+    // return this.board[row][col];
   }
 
-  trace_letters(letter) {
+  traceLetters(letter) {
     this.tracedString += letter;
+    // return this.tracedString;
   }
 
-  reset_tracing() {
+  resetTracing() {
     this.tracedString = "";
     this.tracedMove = [];
   }
 
-  possible_words(string) {
+  possibleWords(string) {
     let words = [];
     let pattern = new RegExp(string);
     for (let i = 0; i < this.words.length; i++) {
@@ -92,16 +97,76 @@ class BoggleBoard {
     return words;
   }
 
+  isInPrevMoves(previousMoves, possibleMove) {
+    let found = 0;
+    if (previousMoves > 0) {
+      for (let i = 0; i < previousMoves.length; i++) {
+        if (previousMoves[i][0] === possibleMove[0]) {
+          if (previousMoves[i][1] === possibleMove[1]) {
+            found += 1;
+          }
+        }
+      }
+    }
+
+    if (found > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  solver() {
+
+    let test = (pos, tracedMove, tracedString) => {
+      let updatedTrMov = tracedMove;
+      updatedTrMov.push([pos[0],pos[1]]);
+      let updatedTrStr = tracedString += this.board[pos[0]][pos[1]];
+      let posMov = this.possibleMoves(pos[0],pos[1]);
+      let posWords = this.possibleWords(updatedTrStr);
+      // console.log(tracedMove);
+      // console.log(posMov);
+      // console.log(updatedTrStr);
+      // console.log(posWords);
+
+
+      if (posWords.length === 1) {
+        let lastWord = posWords[0];
+        if (lastWord === updatedTrStr) {
+          // console.log(lastWord);
+          // console.log(updatedTrMov);
+          // console.log(updatedTrStr);
+          this.matchingWords.push(lastWord);
+          this.resetTracing();
+        } else {
+          this.resetTracing();
+        }
+      } else if (posWords.length > 1){
+        for (let i = 0; i < posMov.length; i++) {
+          return test(posMov[i], updatedTrMov, updatedTrStr);
+        }
+      }
+    }
+
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        this.tracedMove.push([i][j]);
+        this.tracedString += this.board[i][j];
+        let posMovs = this.possibleMoves(i,j);
+        console.log(posMovs);
+        for (let k = 0; k < posMovs.length; k++) {
+          test(posMovs[k], this.tracedMove, this.tracedString);
+        }
+      }
+    }
+  }
+
+
 }
 
-let boggle = new BoggleBoard(4);
-boggle.import_words("data.js");
+let boggle = new BoggleBoard(5);
+boggle.importWords("data.js");
 boggle.shake();
 console.log(boggle.board);
-boggle.trace_letters(boggle.trace_move(0,0));
-boggle.trace_letters(boggle.trace_move(1,0));
-boggle.trace_letters(boggle.trace_move(1,1));
-boggle.trace_letters(boggle.trace_move(1,2));
-console.log(boggle.tracedMove);
-console.log(boggle.tracedString);
-console.log(boggle.possible_words(boggle.tracedString));
+boggle.solver();
+console.log(boggle.matchingWords);
