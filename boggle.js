@@ -2,7 +2,7 @@ class BoggleBoard{
   constructor(jumlahPapan){
     this._papan = jumlahPapan;
     this._board = this.testPapan();   //TEST MAKE PAPAN BUATAN
-    this._kamus = ['NAX']
+    this._kamus = ['NAX', 'NAAX', 'AKAX']
     // this._kamus = ['AYO', 'APA',
     //                 'BAB', 'BIA',
     //                 'CIA', 'CAYO', 'COY',
@@ -51,12 +51,12 @@ class BoggleBoard{
           //CEK HURUF PERTAMA tmp[0] DI CORDINAT BERAPA AJA DAPATNYA
           if(this._board[row][col] == tmp[0]){
             // this.cekWord(tmp.slice(1), [row,col], [[row, col]], tmp[0] )
-            this.cekWord(tmp.slice(1), [row,col], [[row, col]], tmp[0] )
+            arr.push(this.cekWord(tmp.slice(1), [row,col], [[row, col]], tmp[0] ))
 
           }
         }
       }
-      // console.log(arr)
+      console.log(arr)
     }
   }
 
@@ -79,11 +79,11 @@ class BoggleBoard{
                 // console.log(posPernahDiinjek)
                 // console.log('Kordinat tujuan :'+[posSaatIni[0]+area[i][0], posSaatIni[1]+area[i][1]]+ ', Pernah Diinjek : '+posPernahDiinjek+'---'+this.pernahDiinjek([posSaatIni[0]+area[i][0], posSaatIni[1]+area[i][1]], posPernahDiinjek))
                 posPernahDiinjek.push([newrow,newcol])
-                let m = this.cekWord(kata.slice(1), [newrow,newcol], posPernahDiinjek, tmpKata+kata[0])
-                console.log(m)
+                var m = this.cekWord(kata.slice(1), [newrow,newcol], posPernahDiinjek, tmpKata+kata[0])
               }
             }
         }
+    return m;
 
 
 
