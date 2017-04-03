@@ -5,16 +5,17 @@ class BoggleBoard {
     this.size = size;
     this.board = [];
 
-    let alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let alph = "AIUEOAYAMBURUNGMAKANMINUMMOBILMOTORBUAHSAYURNASISENINSELASARABUAIUEOXYZ";
     this.alphabet = alph.split("");
 
-	this.elements = {};
-	
+	  this.elements = {};
+
     this.words = [];
 
-    this.tracedString = [];
-    this.tracedMove = [];
+    // this.tracedString = [];
+    // this.tracedMove = [];
 
+    this.rawMatch = [];
     this.matchingWords = [];
   }
 
@@ -29,7 +30,7 @@ class BoggleBoard {
     }
     return this.board;
   }
-  
+
   createElem() {
 	let index = 0;
     for (let i = 0; i < this.size; i++) {
@@ -86,23 +87,12 @@ class BoggleBoard {
 	        posMov.splice(i, 1);
 	      }
 	    }
-	    
+
       }
     }
-    
+
 
     return posMov;
-  }
-
-
-  traceLetters(letter) {
-    this.tracedString += letter;
-    // return this.tracedString;
-  }
-
-  resetTracing() {
-    this.tracedString = "";
-    this.tracedMove = [];
   }
 
   possibleWords(string) {
@@ -135,58 +125,37 @@ class BoggleBoard {
     }
   }
 
-  solver(startRow, startCol, string = "", tracedMoves =[]) {
-    let row = startRow;
-    let col = startCol;
-    let trMovs = tracedMoves;
-    trMovs.push([row,col]);
-    string += this.elements[`${row}-${col}`].letter;
-    let posMovs = this.possibleMoves(row, col, trMovs);
-    if (posMovs.length === 0) {
-      this.tracedString.push(string);
-    } else {
-	  for (let i = 0; i < posMovs.length; i++) {
-	    let newRow = posMovs[i][0];
-        let newCol = posMovs[i][1];
-        return this.genSolver(newRow, newCol, string, trMovs); 
-	  }
-	  for (let i = posMovs.length-1; i >= 0 ; i--) {
-	    let newRow = posMovs[i][0];
-        let newCol = posMovs[i][1];
-        return this.genSolver(newRow, newCol, string, trMovs); 
-	  }	   
-    }
-  }
-  
   genSolver(row, col, string = "", tracedMoves = []) {
 	  let trMovs = tracedMoves;
 	  trMovs.push([row, col]);
-      string += this.elements[`${row}-${col}`].letter;
-      let posMovs = this.possibleMoves(row, col, trMovs);
+    string += this.elements[`${row}-${col}`].letter;
+    let posMovs = this.possibleMoves(row, col, trMovs);
+    let posWords = this.possibleWords(string);
+    if (posMovs.length === 0 || posWords.length == 0) {
+      return false;
+    } else if (posWords.length === 1) {
+      if (String(posWords).length === string.length) {
+        this.rawMatch.push(string);
+        return true;
+      } else {
+        return false;
+      }
+    } else {
       for (let i = 0; i < posMovs.length; i++) {
-		let newRow = posMovs[i][0];
-		let newCol = posMovs[i][1];
-	    this.solver(newRow, newCol, string, trMovs);
-	  }
-	  for (let i = posMovs.length-1; i >= 0; i--) {
-		let newRow = posMovs[i][0];
-		let newCol = posMovs[i][1];
-	    this.solver(newRow, newCol, string, trMovs);
-	  }
-	  
+  		  let newRow = posMovs[i][0];
+  		  let newCol = posMovs[i][1];
+  	    this.genSolver(newRow, newCol, string, trMovs);
+  	  }
+  	  for (let i = posMovs.length-1; i >= 0; i--) {
+        let newRow = posMovs[i][0];
+        let newCol = posMovs[i][1];
+  	    this.genSolver(newRow, newCol, string, trMovs);
+  	  }
+    }
   }
-  
+
   wordMatch() {
-	let rawMatch = [];
-    for (let i = 0; i < this.tracedString.length; i++) {
-      for (let j = 0; j < this.words.length; j++) {
-	    let pattern = new RegExp(this.words[j]);
-		if (pattern.test(this.tracedString[i])) {
-	      rawMatch.push(this.words[j]);
-	    }
-	  }
-	}
-	rawMatch = new Set(rawMatch);
+	let rawMatch = new Set(this.rawMatch);
 	rawMatch.forEach((word) => {this.matchingWords.push(word)});
 	this.matchingWords.sort();
   }
@@ -206,6 +175,7 @@ console.log("Boggle Board: ");
 for (let i = 0; i < boggle.size; i++) {
   console.log(" " + boggle.board[i].join(" | "));
 }
+
 console.log();
 
 for (let i = 0; i < boggle.size; i++) {
@@ -214,11 +184,13 @@ for (let i = 0; i < boggle.size; i++) {
   }
 }
 
-//console.log(boggle.tracedString);
+for (let i = boggle.size - 1 ; i > 0; i--) {
+  for (let j = boggle.size - 1; j > 0; j--) {
+    boggle.genSolver(i,j);
+  }
+}
+
 
 boggle.wordMatch();
 console.log(`Matching words based on ${data}`);
-for (let i = 0; i < boggle.matchingWords.length; i++) {
-  console.log(boggle.matchingWords[i]);
-}
-
+boggle.matchingWords.forEach((word) => {console.log(word)});
