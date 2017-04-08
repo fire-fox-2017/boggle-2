@@ -5,9 +5,11 @@ const fs = require('fs')
 class Boggle {
     constructor(boardlength) {
         this._boardlength = boardlength;
-        this._stateVisit = this.boardVisit()
+        // this._stateVisit = this.boardVisit()
+        // this._stateFail = this.boardFail()
 
         this._boardData = this.boggle_board()
+
         /*
         this._boardData = [
             ['A', 'M', 'K', 'N'],
@@ -16,6 +18,7 @@ class Boggle {
             ['M', 'N', 'K', 'A']
         ]
         */
+
 
         this._cekBoard = [
             [-1, -1],
@@ -29,7 +32,7 @@ class Boggle {
         ]
 
         this._dict = []
-        //this._dict = ['AKAN', 'AKAN', 'KUDA', 'MANA', 'AKU']
+        // this._dict = ['AKAN', 'AKAN', 'KUDA', 'MANA', 'AKU']
 
     }
 
@@ -60,6 +63,7 @@ class Boggle {
         return text;
     }
 
+    /*
     boardVisit() {
         let tempArr1 = []
         for (let i = 0; i < 4; i++) {
@@ -72,18 +76,33 @@ class Boggle {
         return tempArr1
     }
 
+    boardFail() {
+        let tempArr1 = []
+        for (let i = 0; i < 4; i++) {
+            let tempArr2 = []
+            for (let j = 0; j < 4; j++) {
+                tempArr2.push(true)
+            }
+            tempArr1.push(tempArr2)
+        }
+        return tempArr1
+    }
+    */
+
     solve() {
-        debugger
+        // debugger
         let tempWord = []
         for (let a = 0; a < this._dict.length; a++) {
             let iterateWord = this._dict[a]
-            for (let i = 0; i < this._boardData.length; i++) {
-                for (let j = 0; j < this._boardData[i].length; j++) {
+            for (let i = 0; i < this._boardlength; i++) {
+                for (let j = 0; j < this._boardlength; j++) {
                     // mulai
                     if (iterateWord[0] == this._boardData[i][j]) {
-                        this._stateVisit[i][j] = false
-                        let cekKata = this.correctWord(iterateWord.slice(1), [i, j], iterateWord[0], iterateWord)
-                        if (cekKata == iterateWord) {
+                        let stateXY = [i, j]
+                        let visitedXY = [stateXY]
+                        // this._stateVisit[i][j] = false
+                        let cekKata = this.correctWord(iterateWord.slice(1), stateXY, visitedXY, iterateWord[0], iterateWord)
+                        if (cekKata === iterateWord) {
                             tempWord.push(cekKata)
                         }
                     }
@@ -101,25 +120,35 @@ class Boggle {
         }
     }
 
-    correctWord(wordSisa, coordinateXY, tempWord, word) {
-        debugger
+    correctWord(wordSisa, coordinateXY, visitedXY, tempWord, word) {
+        // debugger
         if (wordSisa.length === 0) {
             return tempWord
         }
+
+        let tempCek = ((destination, visited) => {
+            for (let a = 0; a < visited.length; a++) {
+                if (destination[0] == visited[a][0] && destination[1] === visited[a][1]) {
+                    return false
+                }
+            }
+            return true
+        })
 
         for (let i = 0; i < this._cekBoard.length; i++) {
             if (coordinateXY[0] + this._cekBoard[i][0] >= 0 && coordinateXY[0] + this._cekBoard[i][0] < this._boardlength) {
                 if (coordinateXY[1] + this._cekBoard[i][1] >= 0 && coordinateXY[1] + this._cekBoard[i][1] < this._boardlength) {
                     let destX = coordinateXY[0] + this._cekBoard[i][0]
                     let destY = coordinateXY[1] + this._cekBoard[i][1]
-                    if (this._stateVisit[destX][destY] == true) {
+
+                    if (tempCek([destX, destY], visitedXY) == true) {
                         if (this._boardData[destX][destY] == wordSisa[0]) {
-                            this._stateVisit[destX][destY] = false
-                            let cekKata = this.correctWord(wordSisa.slice(1), [destX, destY], tempWord + wordSisa[0], word)
+                            // this._stateVisit[destX][destY] = false
+                            let cekKata = this.correctWord(wordSisa.slice(1), [destX, destY], visitedXY, tempWord + wordSisa[0], word)
                             if (cekKata == word) {
                                 return cekKata
                             } else {
-                                this.correctWord(wordSisa.slice(1), [destX, destY], tempWord + wordSisa[0], word)
+                                this.correctWord(wordSisa.slice(1), [destX, destY], visitedXY, tempWord + wordSisa[0], word)
                             }
                         }
                     }
