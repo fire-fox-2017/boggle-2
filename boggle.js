@@ -132,5 +132,6 @@ class Boggle {
 let boggle = new Boggle(4)
 let data = "data.js";
 boggle.getData(data);
+// console.log(boggle.boardVisit());
 console.log(boggle._boardData);
 boggle.solve()
