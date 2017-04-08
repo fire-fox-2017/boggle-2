@@ -6,12 +6,10 @@ class BoogleBoard {
     this._alphabet = alphabet.split('');
     // this._dataKata = [];
 
-    // this._boggleBoard = [['D', 'E', 'A', 'T'],
-    //                      ['Z', 'K', 'C', 'I'],
-    //                      ['M', 'A', 'E', 'M'],
-    //                      ['B', 'T', 'A', 'U']];
-
-    this._boggleBoard = this.shake();
+    this._boggleBoard = [['D', 'E', 'A', 'T'],
+                         ['Z', 'K', 'C', 'I'],
+                         ['M', 'A', 'E', 'M'],
+                         ['B', 'T', 'A', 'U']];
 
 
     this._kamus = ['DEK', 'ATI', 'DEKAT', 'KAIT', 'ANAK', 'ICK', 'AEM', 'TAU'];
@@ -19,16 +17,15 @@ class BoogleBoard {
   }
 
   shake() { //memasukkan huruf acak ke dalam papan boggle
-    let papan = [];
     for (var baris = 0; baris < this._boogleBoardSize; baris++) {
       let isiArray = [];
       for (var kolom = 0; kolom < this._boogleBoardSize; kolom++) {
         let kata = this._alphabet[Math.floor(Math.random() * 25) + 0];
         isiArray.push(kata);
       }
-      papan.push(isiArray);
+      this._boogleBoard.push(isiArray);
     }
-    return papan;
+    return this._boogleBoard;
   }
 
   solve() {
