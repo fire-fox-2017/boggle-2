@@ -66,6 +66,7 @@ class Boggle{
     return true
   }
   shake(num){
+    this.board=[]
     var cons = 0;
     for (let i=0; i<num; i++){
       this.board.push([]);
@@ -89,3 +90,4 @@ class Boggle{
 let bg = new Boggle;
 bg.solve(bg.testboard());
 bg.solve(bg.shake(4));
+bg.solve(bg.shake(5));
