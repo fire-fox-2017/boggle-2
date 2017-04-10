@@ -1,0 +1,123 @@
+"use strict"
+const fs = require('fs')
+// Release 1
+
+class Boggle {
+    constructor(boardlength) {
+        this._boardlength = boardlength;
+        this._boardData = this.boggle_board()
+        this._cekBoard = [
+            [-1, -1],
+            [-1, 0],
+            [-1, 1],
+            [0, -1],
+            [0, 1],
+            [1, -1],
+            [1, 0],
+            [1, 1]
+        ]
+
+        this._dict = []
+    }
+
+    getData(source) {
+        let data = fs.readFileSync(source).toString();
+        let regex = /[A-Z][A-Z]+/g;
+        let tempWord = data.match(regex);
+        this._dict = tempWord;
+    }
+
+    boggle_board() {
+        let arrBoard = [];
+        for (let i = 0; i < this._boardlength; i++) {
+            let arrInd = [];
+            for (let k = 0; k < this._boardlength; k++) {
+                arrInd.push(this.shake());
+            }
+            arrBoard.push(arrInd);
+        }
+        return arrBoard;
+    }
+
+    shake() {
+        let text = "";
+        let possible = "AIUEOBCDEFAIUEOGHIJKAIUEOLMNOPAIUEOQRSTUAIUEOVWXYZ";
+        for (let j = 0; j < 1; j++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        return text;
+    }
+    solve() {
+        // debugger
+        let tempWord = []
+        for (let a = 0; a < this._dict.length; a++) {
+            let iterateWord = this._dict[a]
+            for (let i = 0; i < this._boardlength; i++) {
+                for (let j = 0; j < this._boardlength; j++) {
+                    // mulai
+                    if (iterateWord[0] == this._boardData[i][j]) {
+                        let stateXY = [i, j]
+                        let visitedXY = [stateXY]
+                        // this._stateVisit[i][j] = false
+                        let cekKata = this.correctWord(iterateWord.slice(1), stateXY, visitedXY, iterateWord[0], iterateWord)
+                        if (cekKata === iterateWord) {
+                            tempWord.push(cekKata)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (tempWord.length == 0) {
+            console.log('Kata ga ada');
+        } else {
+            console.log(`Daftar kata yg ada:`);
+            for (let b = 0; b < tempWord.length; b++) {
+                console.log(tempWord[b]);
+            }
+        }
+    }
+
+    correctWord(wordSisa, coordinateXY, visitedXY, tempWord, word) {
+        // debugger
+        if (wordSisa.length === 0) {
+            return tempWord
+        }
+
+        let tempCek = ((destination, visited) => {
+            for (let a = 0; a < visited.length; a++) {
+                if (destination[0] == visited[a][0] && destination[1] === visited[a][1]) {
+                    return false
+                }
+            }
+            return true
+        })
+
+        for (let i = 0; i < this._cekBoard.length; i++) {
+            if (coordinateXY[0] + this._cekBoard[i][0] >= 0 && coordinateXY[0] + this._cekBoard[i][0] < this._boardlength) {
+                if (coordinateXY[1] + this._cekBoard[i][1] >= 0 && coordinateXY[1] + this._cekBoard[i][1] < this._boardlength) {
+                    let destX = coordinateXY[0] + this._cekBoard[i][0]
+                    let destY = coordinateXY[1] + this._cekBoard[i][1]
+
+                    if (tempCek([destX, destY], visitedXY) == true) {
+                        if (this._boardData[destX][destY] == wordSisa[0]) {
+                            // this._stateVisit[destX][destY] = false
+                            let cekKata = this.correctWord(wordSisa.slice(1), [destX, destY], visitedXY, tempWord + wordSisa[0], word)
+                            if (cekKata == word) {
+                                return cekKata
+                            } else {
+                                this.correctWord(wordSisa.slice(1), [destX, destY], visitedXY, tempWord + wordSisa[0], word)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+let boggle = new Boggle(4)
+let data = "dataPrivat.js";
+boggle.getData(data);
+
+console.log(boggle._boardData);
+boggle.solve()
