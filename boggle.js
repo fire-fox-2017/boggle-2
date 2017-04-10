@@ -1,12 +1,14 @@
+var words=require('./data.js')
 class Boggle{
   constructor(){
     this.board=[];
     this.alp="BCDFGHJKLMNPQRSTVWXYZ";
     this.vow="AEIOU";
-    this.dictionary=['MIZAB','PIZA','PIKE','IMP','KIWI','IMPI','BIHI','AJEK','ZIB','PHI','PEK','MIK','KIM','KHI','KEP','JAZ','JAB','HIP','EJA','BIK']
+    this.dictionary=words;
+    // ['MIZAB','PIZA','PIKE','IMP','KIWI','IMPI','BIHI','AJEK','ZIB','PHI','PEK','MIK','KIM','KHI','KEP','JAZ','JAB','HIP','EJA','BIK']
   }
   testboard(){
-    let brd = [['P','H','I','W'],['E','K','I','P'],['J','Z','M','B'],['A','B','D','G']]
+    let brd = [['P','H','I','W','Z'],['E','K','I','P','C'],['J','Z','M','B','D'],['A','B','D','G','A'],['A','B','C','D','E']]
     return brd;
   }
   solve(board){
@@ -52,6 +54,7 @@ class Boggle{
       }
     }
     if(count <= 7){
+      str.slice(0,-1)
       count++
       return this.checkWords(board, str.slice(-1)+rest, visited[visited.length-1] ,visited, str.slice(0, -1), word , count)
     }
